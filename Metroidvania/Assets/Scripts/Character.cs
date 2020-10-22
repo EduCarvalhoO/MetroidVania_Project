@@ -8,6 +8,7 @@ public class Character : MonoBehaviour
     public float velocidadePadrao;   //Velocidade padrão do personagem
     public Transform groundCheck;   //Objeto vazio que servirá para verificar quando o personagem está no chão
     public float jumpForce;   //Força do pulo
+    public float fireRate; //Velocidade de ataque do personagem
 
 
     //Variaveis Privadas 
@@ -17,14 +18,19 @@ public class Character : MonoBehaviour
     private bool onGround; //Variavel que detecta se o personagem está no chão
     private bool jump = false; //Variavel que vai verificar se o personagem já pulou para habilitar o doubleJump
     private bool doubleJump; //Variavel que controla para q só seja feito 1 pulo no ar
+    private Weapons weaponEquipped; // Variavel para armazenar a arma que está equipada no jogador
+    private Animator anim; // Variavel anim para gerenciar variaveis de trigger nas  animações
+    private Attack attack; //Variavel que recebe paremetros da classe Attack para gerenciar itens e dano
+    private float nextAttack; //Variavel que gerencia o momento do proximo ataque
     
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        anim = GetComponent<Animator>(); //Variavel anim recebe o componente Animator para que possa ser gerenciado suas variaveis
         rb = GetComponent<Rigidbody2D>();  //Inserindo Rigidbody2D para gerencia atraves da variavel rb
         velocidade = velocidadePadrao; //Velocidade recebe a velocidade padrão do personagem
+        attack = GetComponentInChildren<Attack>(); //Variavel attack recebe o componente do tipo Attack em um de seus objetos filhos (Children)
     }
 
 
@@ -70,6 +76,14 @@ public class Character : MonoBehaviour
             jump = false;
         }
 
+        //Quando for pressionado o botão de ataque e o tempo de ataque corresponder ao estipulado
+        if (Input.GetButtonDown("Fire1") && Time.time > nextAttack && weaponEquipped != null )
+        {
+            anim.SetTrigger("Attack"); //Ativa o trigger da animação
+            attack.PlayAnimation(weaponEquipped.animation); //Realiza a animação da arma equipada
+            nextAttack = Time.time + fireRate; // Aumenta o valor de next attack para que o ataque seja disparado conforme o fireRate
+        }
+
     }
 
     //Função para fazer o sprite do personagem virar
@@ -85,4 +99,13 @@ public class Character : MonoBehaviour
         transform.localScale = scale;   //posição do personagem recebe valor de scale
 
     }
+
+    //Função que realiza a alteração da arma equipada pelo jogador
+    public void AddWeapon(Weapons weapon)
+    {
+        //Arma equipada recebe a arma que foi recebida pela função
+        weaponEquipped = weapon;
+        attack.setWeaponDamage(weaponEquipped.damage); // Damage estabelecido de acordo com a arma que o jogador utiliza
+    }
+
 }
