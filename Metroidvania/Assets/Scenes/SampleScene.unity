@@ -342,7 +342,7 @@ MonoBehaviour:
   velocidadePadrao: 5
   groundCheck: {fileID: 1194580921}
   jumpForce: 700
-  fireRate: 0
+  fireRate: 1
 --- !u!212 &1452355816
 SpriteRenderer:
   m_ObjectHideFlags: 0
